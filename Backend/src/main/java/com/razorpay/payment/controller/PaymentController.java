@@ -55,12 +55,4 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, String>> healthCheck() {
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "UP");
-        response.put("message", "Payment service is running");
-        return ResponseEntity.ok(response);
-    }
 } 
