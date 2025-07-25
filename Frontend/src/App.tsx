@@ -9,6 +9,8 @@ import { Payments } from './pages/Payments';
 import { Configuration } from './pages/Configuration';
 import { Analytics } from './pages/Analytics';
 import { Help } from './pages/Help';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import './pageTransitions.css';
 
 const AppContent: React.FC = () => {
   const { currentPath } = useRouter();
@@ -34,7 +36,15 @@ const AppContent: React.FC = () => {
 
   return (
     <Layout>
-      {renderPage()}
+      <SwitchTransition mode="out-in">
+        <CSSTransition
+          key={currentPath}
+          classNames="fade-page"
+          timeout={300}
+        >
+          <div>{renderPage()}</div>
+        </CSSTransition>
+      </SwitchTransition>
       <Toaster
         position="top-right"
         toastOptions={{

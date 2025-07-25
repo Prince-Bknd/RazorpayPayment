@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, Loader2 } from 'lucide-react';
 import { Product } from '../types';
+import './modalTransitions.css';
 
 interface PaymentModalProps {
   product: Product;
@@ -23,6 +24,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     email: '',
     phone: ''
   });
+  const [touched, setTouched] = useState({ name: false, email: false, phone: false });
+
+  useEffect(() => {
+    if (!isOpen) {
+      setQuantity(1);
+      setCustomerInfo({ name: '', email: '', phone: '' });
+      setTouched({ name: false, email: false, phone: false });
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -30,15 +40,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handlePayment = () => {
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
-      alert('Please fill all customer details');
+      setTouched({ name: true, email: true, phone: true });
       return;
     }
     onPayment(totalAmount, `${product.name} (Qty: ${quantity})`);
   };
 
+  const handleBlur = (field: keyof typeof customerInfo) => {
+    setTouched(t => ({ ...t, [field]: true }));
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 modal-fade">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto scale-in">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
@@ -98,40 +112,55 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* Customer Information */}
           <div className="space-y-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 relative">
                 Full Name
+                <input
+                  type="text"
+                  value={customerInfo.name}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                  onBlur={() => handleBlur('name')}
+                  className={`w-full px-4 py-3 bg-white dark:bg-slate-700 border ${touched.name && !customerInfo.name ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100 peer`}
+                  placeholder=" "
+                />
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 dark:text-slate-400 pointer-events-none transition-all duration-200 ${customerInfo.name ? 'opacity-0' : 'opacity-100'}`}>Enter your full name</span>
+                {touched.name && !customerInfo.name && (
+                  <span className="text-xs text-red-500 absolute right-2 top-1/2 -translate-y-1/2">Required</span>
+                )}
               </label>
-              <input
-                type="text"
-                value={customerInfo.name}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100"
-                placeholder="Enter your full name"
-              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 relative">
                 Email Address
+                <input
+                  type="email"
+                  value={customerInfo.email}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                  onBlur={() => handleBlur('email')}
+                  className={`w-full px-4 py-3 bg-white dark:bg-slate-700 border ${touched.email && !customerInfo.email ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100 peer`}
+                  placeholder=" "
+                />
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 dark:text-slate-400 pointer-events-none transition-all duration-200 ${customerInfo.email ? 'opacity-0' : 'opacity-100'}`}>Enter your email</span>
+                {touched.email && !customerInfo.email && (
+                  <span className="text-xs text-red-500 absolute right-2 top-1/2 -translate-y-1/2">Required</span>
+                )}
               </label>
-              <input
-                type="email"
-                value={customerInfo.email}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100"
-                placeholder="Enter your email"
-              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 relative">
                 Phone Number
+                <input
+                  type="tel"
+                  value={customerInfo.phone}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                  onBlur={() => handleBlur('phone')}
+                  className={`w-full px-4 py-3 bg-white dark:bg-slate-700 border ${touched.phone && !customerInfo.phone ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100 peer`}
+                  placeholder=" "
+                />
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 dark:text-slate-400 pointer-events-none transition-all duration-200 ${customerInfo.phone ? 'opacity-0' : 'opacity-100'}`}>Enter your phone number</span>
+                {touched.phone && !customerInfo.phone && (
+                  <span className="text-xs text-red-500 absolute right-2 top-1/2 -translate-y-1/2">Required</span>
+                )}
               </label>
-              <input
-                type="tel"
-                value={customerInfo.phone}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-800 dark:text-slate-100"
-                placeholder="Enter your phone number"
-              />
             </div>
           </div>
 
