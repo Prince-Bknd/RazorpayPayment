@@ -1,6 +1,6 @@
 # RazorpayPayment
 Working of RazorPay Payment
 
-##Technology Used
+## Technology Used
 Frontend -> React
 Backend -> Spring Boot(Gradle)
