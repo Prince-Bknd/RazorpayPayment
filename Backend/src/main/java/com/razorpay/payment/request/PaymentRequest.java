@@ -1,4 +1,4 @@
-package com.razorpay.payment.model;
+package com.razorpay.payment.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

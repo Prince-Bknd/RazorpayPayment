@@ -1,7 +1,9 @@
 package com.razorpay.payment.controller;
 
-import com.razorpay.payment.model.PaymentRequest;
-import com.razorpay.payment.model.PaymentResponse;
+import com.razorpay.payment.request.PaymentRequest;
+import com.razorpay.payment.response.CustomResponse;
+import com.razorpay.payment.response.PaymentOrderResponse;
+import com.razorpay.payment.response.PaymentResponse;
 import com.razorpay.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,10 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/create-order")
-    public ResponseEntity<PaymentResponse> createOrder(@Valid @RequestBody PaymentRequest paymentRequest) {
-        PaymentResponse response = paymentService.createOrder(paymentRequest);
+    public ResponseEntity<CustomResponse<PaymentOrderResponse>> createOrder(@Valid @RequestBody PaymentRequest paymentRequest) {
+    	CustomResponse<PaymentOrderResponse> response = paymentService.createOrder(paymentRequest);
         
-        if ("created".equals(response.getStatus())) {
+        if (response.getSuccess()) {
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body(response);
@@ -29,14 +31,14 @@ public class PaymentController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<PaymentResponse> verifyPayment(
+    public ResponseEntity<Boolean> verifyPayment(
             @RequestParam String paymentId,
             @RequestParam String orderId,
             @RequestParam String signature) {
         
-        PaymentResponse response = paymentService.verifyPayment(paymentId, orderId, signature);
+        Boolean response = paymentService.verifyPayment(paymentId, orderId, signature);
         
-        if ("verified".equals(response.getStatus())) {
+        if (response) {
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body(response);
@@ -47,7 +49,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> getPaymentDetails(@PathVariable String paymentId) {
         PaymentResponse response = paymentService.getPaymentDetails(paymentId);
         
-        if (response.getError() == null) {
+        if (response.getStatus() != null) {
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body(response);

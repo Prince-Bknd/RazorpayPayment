@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { PaymentConfig } from '../types';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -26,7 +25,7 @@ export const getConfig = async () => {
 };
 
 export const createOrder = async (orderData: { amount: number; currency?: string; receipt?: string }) => {
-  const response = await api.post('/create-order', orderData);
+  const response = await api.post('/payments/create-order', orderData);
   return response.data;
 };
 

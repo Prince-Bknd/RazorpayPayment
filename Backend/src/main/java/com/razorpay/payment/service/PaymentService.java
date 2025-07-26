@@ -4,80 +4,96 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.razorpay.payment.model.PaymentRequest;
-import com.razorpay.payment.model.PaymentResponse;
+import com.razorpay.payment.request.PaymentRequest;
+import com.razorpay.payment.response.CustomResponse;
+import com.razorpay.payment.response.PaymentOrderResponse;
+import com.razorpay.payment.response.PaymentResponse;
+
+import jakarta.annotation.PostConstruct;
+
+import java.util.UUID;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentService {
+	private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
-    @Autowired
     private RazorpayClient razorpayClient;
     
-    @Value("${razorpay.key.id}")
-    private String keyId;
+    private String keyId = "rzp_test_My5AxvarnmYFkS";
     
-    @Value("${razorpay.key.secret}")
-    private String keySecret;
+    private String secretKey = "QLRstvhjUACEEhs6BiYmFMOp";
+    
+    @PostConstruct
+	public void init() {
+		try {
+			this.razorpayClient = new RazorpayClient(keyId, secretKey);
+		} catch (RazorpayException e) {
+			throw new RuntimeException("Failed to initialize Razorpay client", e);
+		}
+	}
 
-    public PaymentResponse createOrder(PaymentRequest paymentRequest) {
-        try {
-            JSONObject orderRequest = new JSONObject();
-            orderRequest.put("amount", paymentRequest.getAmount());
-            orderRequest.put("currency", paymentRequest.getCurrency());
-            orderRequest.put("receipt", paymentRequest.getReceipt());
-            
-            // Add customer details
-            JSONObject notes = new JSONObject();
-            notes.put("customer_name", paymentRequest.getCustomerName());
-            notes.put("customer_email", paymentRequest.getCustomerEmail());
-            notes.put("customer_phone", paymentRequest.getCustomerPhone());
-            if (paymentRequest.getDescription() != null) {
-                notes.put("description", paymentRequest.getDescription());
-            }
-            orderRequest.put("notes", notes);
-
-            Order order = razorpayClient.orders.create(orderRequest);
-            
-            return new PaymentResponse(
-                order.get("id").toString(),
-                null,
-                "created",
-                "Order created successfully"
-            );
-            
-        } catch (RazorpayException e) {
-            return new PaymentResponse("RAZORPAY_ERROR", "Failed to create order: " + e.getMessage());
-        } catch (Exception e) {
-            return new PaymentResponse("INTERNAL_ERROR", "Internal server error: " + e.getMessage());
-        }
+    public CustomResponse<PaymentOrderResponse> createOrder(PaymentRequest paymentRequest) {
+    	try {
+			logger.info("Initiated Payment");
+			logger.info("CURRENTLY, NOT STORING IN DATABASE!!");
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("amount", paymentRequest.getAmount() * 100);
+			orderRequest.put("currency", "INR");
+			orderRequest.put("payment_capture", 1);
+			orderRequest.put("receipt", "txn_" + UUID.randomUUID().toString());
+			Order order = this.razorpayClient.orders.create(orderRequest);
+			System.out.println("Order Created: " + order);
+			PaymentOrderResponse response = new PaymentOrderResponse();
+			response.setAmount(paymentRequest.getAmount().toString());
+			response.setOrderId(order.get("id"));
+			response.setPaymentId(UUID.randomUUID().toString());
+			response.setReceiptId(order.get("receipt"));
+			return new CustomResponse<>(HttpStatus.OK, "Order created successfully", response, true);
+		} catch (RazorpayException e) {
+			logger.error("Order creation failed: {}", e.getMessage(), e);
+			return new CustomResponse<>(HttpStatus.BAD_REQUEST, "Error creating Razorpay order", null,
+					false);
+		} catch (Exception e) {
+			logger.error("Order creation failed: {}", e.getMessage(), e);
+			return new CustomResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating Razorpay order",
+					null, false);
+		}
     }
 
-    public PaymentResponse verifyPayment(String paymentId, String orderId, String signature) {
-        try {
-            // Fetch payment details to verify
-            Payment payment = razorpayClient.payments.fetch(paymentId);
-            
-            // Check if payment belongs to the order
-            if (payment.get("order_id").toString().equals(orderId)) {
-                return new PaymentResponse(
-                    orderId,
-                    paymentId,
-                    "verified",
-                    "Payment verified successfully"
-                );
-            } else {
-                return new PaymentResponse("ORDER_MISMATCH", "Payment does not belong to the specified order");
-            }
-            
-        } catch (RazorpayException e) {
-            return new PaymentResponse("RAZORPAY_ERROR", "Failed to verify payment: " + e.getMessage());
-        } catch (Exception e) {
-            return new PaymentResponse("INTERNAL_ERROR", "Internal server error: " + e.getMessage());
-        }
+    public Boolean verifyPayment(String paymentId, String orderId, String signature) {
+    	try {
+			String payload = orderId + "|" + paymentId;
+
+			Mac sha256Hmac = Mac.getInstance("HmacSHA256");
+			SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+			sha256Hmac.init(secretKeySpec);
+
+			byte[] hash = sha256Hmac.doFinal(payload.getBytes());
+
+			StringBuilder hexString = new StringBuilder();
+			for (byte b : hash) {
+				String hex = Integer.toHexString(0xff & b);
+				if (hex.length() == 1)
+					hexString.append('0');
+				hexString.append(hex);
+			}
+
+			String expectedSignature = hexString.toString();
+
+			return expectedSignature.equals(signature);
+		} catch (Exception e) {
+			logger.error("Exception during signature verification: ", e);
+			return false;
+		}
     }
 
     public PaymentResponse getPaymentDetails(String paymentId) {
@@ -92,9 +108,9 @@ public class PaymentService {
             );
             
         } catch (RazorpayException e) {
-            return new PaymentResponse("RAZORPAY_ERROR", "Failed to fetch payment details: " + e.getMessage());
+            return new PaymentResponse(null, "Failed to fetch payment details: " + e.getMessage());
         } catch (Exception e) {
-            return new PaymentResponse("INTERNAL_ERROR", "Internal server error: " + e.getMessage());
+            return new PaymentResponse(null, "Internal server error: " + e.getMessage());
         }
     }
 } 
