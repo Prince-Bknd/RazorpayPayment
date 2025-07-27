@@ -20,30 +20,35 @@ export const Products: React.FC = () => {
     setSelectedProduct(product);
   };
 
-  const handlePayment = async (amount: number, productName: string) => {
+  const handlePayment = async (amount: number, productName: string, customerInfo: { name: string; email: string; phone: string }) => {
     setLoading(true);
     try {
-      // Create order
+      // Create order with all required fields
       const orderResponse = await createOrder({
         amount,
         currency: 'INR',
-        receipt: `receipt_${Date.now()}`
+        receipt: `receipt_${Date.now()}`,
+        customerName: customerInfo.name,
+        customerEmail: customerInfo.email,
+        customerPhone: customerInfo.phone,
+        description: productName
       });
 
       if (!orderResponse.success) {
         throw new Error(orderResponse.message);
       }
 
-      const { order, keyId } = orderResponse;
+      const order = orderResponse.data;
+      const keyId = 'rzp_test_My5AxvarnmYFkS'; // This should come from backend config
 
       // Configure Razorpay options
       const options = {
         key: keyId,
         amount: order.amount,
-        currency: order.currency,
+        currency: 'INR',
         name: 'Razorpay Payment Gateway',
         description: productName,
-        order_id: order.id,
+        order_id: order.orderId,
         handler: async (response: PaymentResponse) => {
           try {
             // Verify payment
@@ -53,7 +58,7 @@ export const Products: React.FC = () => {
               razorpay_signature: response.razorpay_signature
             });
 
-            if (verifyResponse.success) {
+            if (verifyResponse) {
               toast.success('Payment successful!');
               setSelectedProduct(null);
             } else {
@@ -65,9 +70,9 @@ export const Products: React.FC = () => {
           }
         },
         prefill: {
-          name: 'Customer Name',
-          email: 'customer@example.com',
-          contact: '9999999999'
+          name: customerInfo.name,
+          email: customerInfo.email,
+          contact: customerInfo.phone
         },
         theme: {
           color: '#3B82F6'

@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './components/ThemeProvider';
 import { RouterProvider, useRouter } from './hooks/useRouter';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Products } from './pages/Products';
-import { Payments } from './pages/Payments';
 import { Configuration } from './pages/Configuration';
 import { Analytics } from './pages/Analytics';
 import { Help } from './pages/Help';
@@ -14,6 +13,7 @@ import './pageTransitions.css';
 
 const AppContent: React.FC = () => {
   const { currentPath } = useRouter();
+  const nodeRef = useRef(null);
 
   const renderPage = () => {
     switch (currentPath) {
@@ -21,8 +21,6 @@ const AppContent: React.FC = () => {
         return <Dashboard />;
       case '/products':
         return <Products />;
-      case '/payments':
-        return <Payments />;
       case '/config':
         return <Configuration />;
       case '/analytics':
@@ -41,8 +39,9 @@ const AppContent: React.FC = () => {
           key={currentPath}
           classNames="fade-page"
           timeout={300}
+          nodeRef={nodeRef}
         >
-          <div>{renderPage()}</div>
+          <div ref={nodeRef}>{renderPage()}</div>
         </CSSTransition>
       </SwitchTransition>
       <Toaster
