@@ -24,27 +24,7 @@ export const getConfig = async () => {
   return response.data;
 };
 
-export const createOrder = async (orderData: { 
-  amount: number; 
-  currency?: string; 
-  receipt?: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  description?: string;
-}): Promise<{
-  success: boolean;
-  message: string;
-  data: {
-    orderId: string;
-    amount: string;
-    receiptId: string;
-    razorPayOrderId: string;
-    razorPayPaymentId: string;
-    razorPaySignature: string;
-    created_at: string;
-  };
-}> => {
+export const createOrder = async (orderData: { amount: number; currency?: string; receipt?: string }) => {
   const response = await api.post('/payments/create-order', orderData);
   return response.data;
 };
@@ -53,14 +33,8 @@ export const verifyPayment = async (paymentData: {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
-}): Promise<boolean> => {
-  const response = await api.post('/payments/verify', null, {
-    params: {
-      paymentId: paymentData.razorpay_payment_id,
-      orderId: paymentData.razorpay_order_id,
-      signature: paymentData.razorpay_signature
-    }
-  });
+}) => {
+  const response = await api.post('/verify-payment', paymentData);
   return response.data;
 };
 

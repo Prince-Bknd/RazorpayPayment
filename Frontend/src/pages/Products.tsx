@@ -20,35 +20,30 @@ export const Products: React.FC = () => {
     setSelectedProduct(product);
   };
 
-  const handlePayment = async (amount: number, productName: string, customerInfo: { name: string; email: string; phone: string }) => {
+  const handlePayment = async (amount: number, productName: string) => {
     setLoading(true);
     try {
-      // Create order with all required fields
+      // Create order
       const orderResponse = await createOrder({
         amount,
         currency: 'INR',
-        receipt: `receipt_${Date.now()}`,
-        customerName: customerInfo.name,
-        customerEmail: customerInfo.email,
-        customerPhone: customerInfo.phone,
-        description: productName
+        receipt: `receipt_${Date.now()}`
       });
 
       if (!orderResponse.success) {
         throw new Error(orderResponse.message);
       }
 
-      const order = orderResponse.data;
-      const keyId = 'rzp_test_My5AxvarnmYFkS'; // This should come from backend config
+      const { order, keyId } = orderResponse;
 
       // Configure Razorpay options
       const options = {
         key: keyId,
         amount: order.amount,
-        currency: 'INR',
+        currency: order.currency,
         name: 'Razorpay Payment Gateway',
         description: productName,
-        order_id: order.orderId,
+        order_id: order.id,
         handler: async (response: PaymentResponse) => {
           try {
             // Verify payment
@@ -58,7 +53,7 @@ export const Products: React.FC = () => {
               razorpay_signature: response.razorpay_signature
             });
 
-            if (verifyResponse) {
+            if (verifyResponse.success) {
               toast.success('Payment successful!');
               setSelectedProduct(null);
             } else {
@@ -70,9 +65,9 @@ export const Products: React.FC = () => {
           }
         },
         prefill: {
-          name: customerInfo.name,
-          email: customerInfo.email,
-          contact: customerInfo.phone
+          name: 'Customer Name',
+          email: 'customer@example.com',
+          contact: '9999999999'
         },
         theme: {
           color: '#3B82F6'
