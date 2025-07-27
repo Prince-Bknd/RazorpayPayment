@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './components/ThemeProvider';
 import { RouterProvider, useRouter } from './hooks/useRouter';
@@ -14,7 +14,6 @@ import './pageTransitions.css';
 
 const AppContent: React.FC = () => {
   const { currentPath } = useRouter();
-  const nodeRef = useRef(null);
 
   const renderPage = () => {
     switch (currentPath) {
@@ -42,9 +41,8 @@ const AppContent: React.FC = () => {
           key={currentPath}
           classNames="fade-page"
           timeout={300}
-          nodeRef={nodeRef}
         >
-          <div ref={nodeRef}>{renderPage()}</div>
+          <div>{renderPage()}</div>
         </CSSTransition>
       </SwitchTransition>
       <Toaster

@@ -7,7 +7,7 @@ interface PaymentModalProps {
   product: Product;
   isOpen: boolean;
   onClose: () => void;
-  onPayment: (amount: number, productName: string, customerInfo: { name: string; email: string; phone: string }) => void;
+  onPayment: (amount: number, productName: string) => void;
   loading: boolean;
 }
 
@@ -43,7 +43,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setTouched({ name: true, email: true, phone: true });
       return;
     }
-    onPayment(totalAmount, `${product.name} (Qty: ${quantity})`, customerInfo);
+    onPayment(totalAmount, `${product.name} (Qty: ${quantity})`);
   };
 
   const handleBlur = (field: keyof typeof customerInfo) => {
