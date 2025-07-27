@@ -4,6 +4,7 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.payment.config.RazorpayConfig;
 import com.razorpay.payment.request.PaymentRequest;
 import com.razorpay.payment.response.CustomResponse;
 import com.razorpay.payment.response.PaymentOrderResponse;
@@ -19,6 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,11 @@ public class PaymentService {
 
     private RazorpayClient razorpayClient;
     
-    private String keyId = "rzp_test_My5AxvarnmYFkS";
+    @Value("${razorpay.key_id}")
+    private String keyId;
     
-    private String secretKey = "QLRstvhjUACEEhs6BiYmFMOp";
+    @Value("${razorpay.key_secret}")
+    private String secretKey;
     
     @PostConstruct
 	public void init() {
@@ -46,14 +50,16 @@ public class PaymentService {
 			logger.info("Initiated Payment");
 			logger.info("CURRENTLY, NOT STORING IN DATABASE!!");
 			JSONObject orderRequest = new JSONObject();
+			// Convert amount to paise (multiply by 100)
 			orderRequest.put("amount", paymentRequest.getAmount() * 100);
-			orderRequest.put("currency", "INR");
+			orderRequest.put("currency", paymentRequest.getCurrency() != null ? paymentRequest.getCurrency() : "INR");
 			orderRequest.put("payment_capture", 1);
-			orderRequest.put("receipt", "txn_" + UUID.randomUUID().toString());
+			orderRequest.put("receipt", paymentRequest.getReceipt() != null ? paymentRequest.getReceipt() : "txn_" + UUID.randomUUID().toString());
 			Order order = this.razorpayClient.orders.create(orderRequest);
 			System.out.println("Order Created: " + order);
 			PaymentOrderResponse response = new PaymentOrderResponse();
-			response.setAmount(paymentRequest.getAmount().toString());
+			// Return amount in paise for Razorpay frontend
+			response.setAmount(String.valueOf(paymentRequest.getAmount() * 100));
 			response.setOrderId(order.get("id"));
 			response.setPaymentId(UUID.randomUUID().toString());
 			response.setReceiptId(order.get("receipt"));
