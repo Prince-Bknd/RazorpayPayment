@@ -1,5 +1,5 @@
 # RazorpayPayment
-Working of RazorPay Payment
+Working of RazorPay Payment in Spring Boot
 
 ## Technology Used
 Frontend -> React, 
