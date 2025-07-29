@@ -1,10 +1,18 @@
 import React, { useEffect, useRef } from 'react';
+<<<<<<< HEAD
 import { LayoutDashboard, CreditCard, Settings, BarChart3, HelpCircle, Zap } from 'lucide-react';
+=======
+import { LayoutDashboard, ShoppingBag, Settings, BarChart3, HelpCircle, Zap } from 'lucide-react';
+>>>>>>> 22522e5c43e76b9826dd26dbe3beafc7a84e5c1b
 import { useRouter } from '../hooks/useRouter';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+<<<<<<< HEAD
   { name: 'Payments', href: '/payments', icon: CreditCard },
+=======
+  { name: 'Products', href: '/products', icon: ShoppingBag },
+>>>>>>> 22522e5c43e76b9826dd26dbe3beafc7a84e5c1b
   { name: 'Configuration', href: '/config', icon: Settings },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Help', href: '/help', icon: HelpCircle },
