@@ -3,63 +3,13 @@ export const APP_VERSION = '1.0.0';
 
 export const NAVIGATION_ITEMS = [
   { name: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-  { name: 'Products', href: '/products', icon: 'ShoppingBag' },
   { name: 'Payments', href: '/payments', icon: 'CreditCard' },
   { name: 'Configuration', href: '/config', icon: 'Settings' },
   { name: 'Analytics', href: '/analytics', icon: 'BarChart3' },
   { name: 'Help', href: '/help', icon: 'HelpCircle' },
 ];
 
-export const SAMPLE_PRODUCTS = [
-  {
-    id: '1',
-    name: 'Premium Subscription',
-    description: 'Access to all premium features for 1 month',
-    price: 999,
-    image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Subscription'
-  },
-  {
-    id: '2',
-    name: 'Pro Plan',
-    description: 'Advanced features and priority support',
-    price: 1999,
-    image: 'https://images.pexels.com/photos/4386370/pexels-photo-4386370.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Plan'
-  },
-  {
-    id: '3',
-    name: 'Enterprise Solution',
-    description: 'Complete business solution with custom features',
-    price: 4999,
-    image: 'https://images.pexels.com/photos/4386366/pexels-photo-4386366.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Enterprise'
-  },
-  {
-    id: '4',
-    name: 'API Credits',
-    description: '10,000 API calls for your applications',
-    price: 599,
-    image: 'https://images.pexels.com/photos/4386433/pexels-photo-4386433.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Credits'
-  },
-  {
-    id: '5',
-    name: 'Storage Plan',
-    description: '100GB cloud storage with backup',
-    price: 299,
-    image: 'https://images.pexels.com/photos/4386372/pexels-photo-4386372.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Storage'
-  },
-  {
-    id: '6',
-    name: 'Analytics Dashboard',
-    description: 'Advanced analytics and reporting tools',
-    price: 1499,
-    image: 'https://images.pexels.com/photos/4386369/pexels-photo-4386369.jpeg?auto=compress&cs=tinysrgb&w=400',
-    category: 'Analytics'
-  }
-];
+
 
 export const PAYMENT_METHODS = [
   'Card',
