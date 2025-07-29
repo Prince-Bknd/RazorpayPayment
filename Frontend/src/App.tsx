@@ -4,7 +4,7 @@ import { ThemeProvider } from './components/ThemeProvider';
 import { RouterProvider, useRouter } from './hooks/useRouter';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
-import { Products } from './pages/Products';
+import { Payments } from './pages/Payments';
 import { Configuration } from './pages/Configuration';
 import { Analytics } from './pages/Analytics';
 import { Help } from './pages/Help';
@@ -19,8 +19,8 @@ const AppContent: React.FC = () => {
     switch (currentPath) {
       case '/':
         return <Dashboard />;
-      case '/products':
-        return <Products />;
+      case '/payments':
+        return <Payments />;
       case '/config':
         return <Configuration />;
       case '/analytics':
