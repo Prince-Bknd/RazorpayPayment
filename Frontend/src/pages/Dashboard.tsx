@@ -207,135 +207,105 @@ export const Dashboard: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2 flex items-center">
-              <Sparkles className="w-8 h-8 text-blue-500 mr-3 animate-pulse" />
-              Live Payment Dashboard
-              {isLive && <div className="ml-3 w-3 h-3 bg-green-500 rounded-full animate-ping"></div>}
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+              Payment Dashboard
             </h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Real-time monitoring of your payment ecosystem
+              Monitor your payment transactions and revenue metrics
             </p>
           </div>
+          <button
+            onClick={checkServerHealth}
+            disabled={isRefreshing}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+              isRefreshing 
+                ? 'bg-amber-500 text-white cursor-not-allowed' 
+                : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
+            <span>{isRefreshing ? 'Connecting...' : 'Refresh Status'}</span>
+            {isRefreshing && (
+              <div className="flex space-x-1">
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Server Status with Animation */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setIsLive(!isLive)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                isLive 
-                  ? 'bg-green-500 hover:bg-green-600 text-white' 
-                  : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              {isLive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              <span>{isLive ? 'Live' : 'Paused'}</span>
-            </button>
-                         <button
-               onClick={checkServerHealth}
-               disabled={isRefreshing}
-               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                 isRefreshing 
-                   ? 'bg-amber-500 text-white cursor-not-allowed' 
-                   : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
-               }`}
-             >
-               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
-               <span>{isRefreshing ? 'Connecting...' : 'Refresh'}</span>
-               {isRefreshing && (
-                 <div className="flex space-x-1">
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                 </div>
-               )}
-             </button>
+            <div className="relative">
+              <div className={`w-4 h-4 rounded-full ${
+                serverStatus === 'connected' ? 'bg-green-500 animate-pulse' : 
+                serverStatus === 'disconnected' ? 'bg-red-500 animate-pulse' : 
+                'bg-amber-500 animate-ping'
+              }`}></div>
+              {serverStatus === 'checking' && (
+                <div className="absolute inset-0 w-4 h-4 rounded-full bg-amber-400 animate-ping" style={{ animationDelay: '0.5s' }}></div>
+              )}
+              {serverStatus === 'connected' && (
+                <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-400 animate-ping" style={{ animationDelay: '0.3s' }}></div>
+              )}
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                <Zap className={`w-5 h-5 text-blue-500 mr-2 ${
+                  serverStatus === 'checking' ? 'animate-spin' : 
+                  serverStatus === 'connected' ? 'animate-pulse' : ''
+                }`} />
+                Backend Server Status
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {serverStatus === 'connected' ? (
+                  <span className="flex items-center">
+                    <span className="mr-2">Connected and operational</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                  </span>
+                ) : serverStatus === 'disconnected' ? (
+                  'Disconnected - Please check your backend server'
+                ) : (
+                  <span className="flex items-center">
+                    <span className="mr-2">Connecting to server...</span>
+                    <div className="flex space-x-1">
+                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            {serverStatus === 'checking' && (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-amber-600 dark:text-amber-400 animate-pulse">Connecting...</span>
+              </div>
+            )}
+            {serverStatus === 'connected' && (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-600 dark:text-green-400">Live</span>
+              </div>
+            )}
+            {serverStatus === 'disconnected' && (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-red-600 dark:text-red-400">Offline</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-             {/* Server Status with Animation */}
-       <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
-         <div className="flex items-center justify-between">
-           <div className="flex items-center space-x-3">
-             <div className="relative">
-               <div className={`w-4 h-4 rounded-full ${
-                 serverStatus === 'connected' ? 'bg-green-500 animate-pulse' : 
-                 serverStatus === 'disconnected' ? 'bg-red-500 animate-pulse' : 
-                 'bg-amber-500 animate-ping'
-               }`}></div>
-               {serverStatus === 'checking' && (
-                 <div className="absolute inset-0 w-4 h-4 rounded-full bg-amber-400 animate-ping" style={{ animationDelay: '0.5s' }}></div>
-               )}
-               {serverStatus === 'connected' && (
-                 <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-400 animate-ping" style={{ animationDelay: '0.3s' }}></div>
-               )}
-             </div>
-             <div>
-               <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center">
-                 <Zap className={`w-5 h-5 text-blue-500 mr-2 ${
-                   serverStatus === 'checking' ? 'animate-spin' : 
-                   serverStatus === 'connected' ? 'animate-pulse' : ''
-                 }`} />
-                 Backend Server Status
-               </h3>
-               <p className="text-sm text-slate-600 dark:text-slate-400">
-                 {serverStatus === 'connected' ? (
-                   <span className="flex items-center">
-                     <span className="mr-2">Connected and operational</span>
-                     <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                   </span>
-                 ) : serverStatus === 'disconnected' ? (
-                   'Disconnected - Please check your backend server'
-                 ) : (
-                   <span className="flex items-center">
-                     <span className="mr-2">Connecting to server...</span>
-                     <div className="flex space-x-1">
-                       <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                       <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                       <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                     </div>
-                   </span>
-                 )}
-               </p>
-             </div>
-           </div>
-           <div className="flex items-center space-x-2">
-             {serverStatus === 'checking' && (
-               <div className="flex items-center space-x-1">
-                 <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                 <span className="text-xs text-amber-600 dark:text-amber-400 animate-pulse">Connecting...</span>
-               </div>
-             )}
-             {serverStatus === 'connected' && (
-               <div className="flex items-center space-x-1">
-                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                 <span className="text-xs text-green-600 dark:text-green-400">Live</span>
-               </div>
-             )}
-             {serverStatus === 'disconnected' && (
-               <div className="flex items-center space-x-1">
-                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                 <span className="text-xs text-red-600 dark:text-red-400">Offline</span>
-               </div>
-             )}
-           </div>
-         </div>
-       </div>
-
-      {/* Featured Metric */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-xl p-8 text-white">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Featured Metric</h2>
-          <Target className="w-8 h-8" />
-        </div>
-        <div className="text-center">
-          <div className="text-5xl font-bold mb-2">
-            ₹{dynamicStats[currentMetric].value}
-          </div>
-          <div className="text-xl opacity-90">{dynamicStats[currentMetric].name}</div>
-          <div className="text-sm opacity-75 mt-2">{dynamicStats[currentMetric].description}</div>
-        </div>
-      </div>
-
-      {/* Interactive Stats Grid */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {dynamicStats.map((stat, index) => {
           const Icon = stat.icon;

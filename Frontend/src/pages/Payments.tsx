@@ -171,8 +171,6 @@ export const Payments: React.FC = () => {
               </p>
             </div>
 
-
-
             {/* Payment Summary */}
             {amount && parseFloat(amount) > 0 && (
               <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
