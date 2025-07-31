@@ -1,14 +1,12 @@
 import React, { useRef } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './components/ThemeProvider';
+import { ConnectionProvider } from './contexts/ConnectionContext';
 import { RouterProvider, useRouter } from './hooks/useRouter';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
-<<<<<<< HEAD
 import { Payments } from './pages/Payments';
-=======
 import { Products } from './pages/Products';
->>>>>>> 22522e5c43e76b9826dd26dbe3beafc7a84e5c1b
 import { Configuration } from './pages/Configuration';
 import { Analytics } from './pages/Analytics';
 import { Help } from './pages/Help';
@@ -23,13 +21,10 @@ const AppContent: React.FC = () => {
     switch (currentPath) {
       case '/':
         return <Dashboard />;
-<<<<<<< HEAD
       case '/payments':
         return <Payments />;
-=======
       case '/products':
         return <Products />;
->>>>>>> 22522e5c43e76b9826dd26dbe3beafc7a84e5c1b
       case '/config':
         return <Configuration />;
       case '/analytics':
@@ -58,8 +53,39 @@ const AppContent: React.FC = () => {
         toastOptions={{
           duration: 4000,
           style: {
-            background: 'var(--toast-bg)',
-            color: 'var(--toast-color)',
+            background: '#ffffff',
+            color: '#1f2937',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            padding: '16px 20px',
+            fontSize: '14px',
+            fontWeight: '500',
+            maxWidth: '400px',
+          },
+          success: {
+            style: {
+              background: '#f0fdf4',
+              color: '#166534',
+              border: '1px solid #bbf7d0',
+              boxShadow: '0 10px 25px -5px rgba(34, 197, 94, 0.1), 0 10px 10px -5px rgba(34, 197, 94, 0.04)',
+            },
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            style: {
+              background: '#fef2f2',
+              color: '#dc2626',
+              border: '1px solid #fecaca',
+              boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.1), 0 10px 10px -5px rgba(239, 68, 68, 0.04)',
+            },
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
           },
         }}
       />
@@ -70,9 +96,11 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ThemeProvider>
-      <RouterProvider>
-        <AppContent />
-      </RouterProvider>
+      <ConnectionProvider>
+        <RouterProvider>
+          <AppContent />
+        </RouterProvider>
+      </ConnectionProvider>
     </ThemeProvider>
   );
 }

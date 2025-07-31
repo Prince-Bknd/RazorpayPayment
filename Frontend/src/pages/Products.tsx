@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { PaymentModal } from '../components/PaymentModal';
 import { SAMPLE_PRODUCTS } from '../utils/constants';
@@ -15,6 +15,18 @@ declare global {
 export const Products: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handlePurchase = (product: Product) => {
     setSelectedProduct(product);
@@ -127,9 +139,6 @@ export const Products: React.FC = () => {
           loading={loading}
         />
       )}
-
-      {/* Razorpay Script */}
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </div>
   );
 };

@@ -50,3 +50,66 @@ Razorpay Payment Gateway Features:
 • Developer-friendly APIs with extensive documentation
 • 24/7 customer support and technical assistance
 `;
+
+export const SAMPLE_PRODUCTS = [
+  {
+    id: '1',
+    name: 'Premium Plan',
+    description: 'Advanced features with priority support',
+    price: 999,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop',
+    category: 'Subscription',
+    features: ['Unlimited transactions', 'Priority support', 'Advanced analytics', 'Custom branding']
+  },
+  {
+    id: '2',
+    name: 'Business Suite',
+    description: 'Complete business solution with all features',
+    price: 2499,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
+    category: 'Business',
+    features: ['Multi-user access', 'API integration', 'White-label solution', 'Dedicated support']
+  },
+  {
+    id: '3',
+    name: 'Enterprise Package',
+    description: 'Scalable solution for large organizations',
+    price: 4999,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop',
+    category: 'Enterprise',
+    features: ['Custom development', 'SLA guarantee', 'On-premise option', '24/7 support']
+  },
+  {
+    id: '4',
+    name: 'Starter Pack',
+    description: 'Perfect for small businesses and startups',
+    price: 499,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop',
+    category: 'Starter',
+    features: ['Basic features', 'Email support', 'Standard integration', 'Monthly billing']
+  },
+  {
+    id: '5',
+    name: 'Developer Kit',
+    description: 'Tools and resources for developers',
+    price: 799,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop',
+    category: 'Development',
+    features: ['SDK access', 'Documentation', 'Testing tools', 'Community access']
+  },
+  {
+    id: '6',
+    name: 'Analytics Pro',
+    description: 'Advanced analytics and reporting tools',
+    price: 1299,
+    currency: 'INR',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+    category: 'Analytics',
+    features: ['Real-time dashboards', 'Custom reports', 'Data export', 'Predictive analytics']
+  }
+];

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, ArrowRight, Loader2 } from 'lucide-react';
 import { createOrder, verifyPayment } from '../utils/api';
+import { ConnectionWarning } from '../components/ConnectionWarning';
 import toast from 'react-hot-toast';
 
 declare global {
@@ -12,6 +13,18 @@ declare global {
 export const Payments: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +117,9 @@ export const Payments: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Connection Warning */}
+      <ConnectionWarning />
+      
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2">
@@ -128,8 +144,8 @@ export const Payments: React.FC = () => {
               <p className="text-slate-600 dark:text-slate-400">
                 Enter the amount you want to pay
               </p>
+            </div>
           </div>
-        </div>
 
           <form onSubmit={handlePayment} className="space-y-6">
             {/* Amount Input */}
@@ -168,8 +184,8 @@ export const Payments: React.FC = () => {
                   <span className="text-xl font-bold text-slate-800 dark:text-slate-100">
                     ₹{parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
-          </div>
-        </div>
+                </div>
+              </div>
             )}
 
             {/* Pay Now Button */}
@@ -192,22 +208,19 @@ export const Payments: React.FC = () => {
             <div className="flex items-start space-x-3">
               <div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center mt-0.5">
                 <span className="text-white text-xs font-bold">!</span>
-            </div>
-            <div>
+              </div>
+              <div>
                 <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-1">
                   Secure Payment
                 </h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">
                   Your payment is processed securely through Razorpay. We never store your payment details.
                 </p>
-            </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Razorpay Script */}
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </div>
   );
 };

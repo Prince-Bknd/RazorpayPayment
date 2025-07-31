@@ -1,6 +1,7 @@
 import React from 'react';
 import { Moon, Sun, User, Bell, CreditCard } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import { ConnectionStatus } from './ConnectionStatus';
 
 export const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -19,6 +20,9 @@ export const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-4">
+          {/* Connection Status */}
+          <ConnectionStatus />
+          
           <button className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200">
             <Bell className="w-5 h-5" />
           </button>
