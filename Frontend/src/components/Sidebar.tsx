@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { LayoutDashboard, CreditCard, ShoppingBag, Settings, BarChart3, HelpCircle, Zap } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, CreditCard, Settings, BarChart3, HelpCircle, Zap } from 'lucide-react';
 import { useRouter } from '../hooks/useRouter';
 
 const navigation = [
