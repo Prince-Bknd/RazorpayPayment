@@ -150,7 +150,6 @@ export const Dashboard: React.FC = () => {
 
   // Check server health only once when component mounts
   useEffect(() => {
-    // Only check once when dashboard loads
     checkServerHealth();
   }, []);
 
@@ -216,47 +215,26 @@ export const Dashboard: React.FC = () => {
               Monitor your payment transactions and revenue metrics
             </p>
           </div>
-                     {serverStatus === 'disconnected' ? (
-             <button
-               onClick={checkServerHealth}
-               disabled={isRefreshing}
-               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                 isRefreshing 
-                   ? 'bg-amber-500 text-white cursor-not-allowed' 
-                   : 'bg-red-500 hover:bg-red-600 text-white hover:scale-105'
-               }`}
-             >
-               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
-               <span>{isRefreshing ? 'Connecting...' : 'Try Connect'}</span>
-               {isRefreshing && (
-                 <div className="flex space-x-1">
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                 </div>
-               )}
-             </button>
-           ) : (
-             <button
-               onClick={checkServerHealth}
-               disabled={isRefreshing}
-               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                 isRefreshing 
-                   ? 'bg-amber-500 text-white cursor-not-allowed' 
-                   : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
-               }`}
-             >
-               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
-               <span>{isRefreshing ? 'Connecting...' : 'Refresh Status'}</span>
-               {isRefreshing && (
-                 <div className="flex space-x-1">
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                 </div>
-               )}
-             </button>
-           )}
+          {/* Resolved merge conflict and updated refresh button */}
+          <button
+            onClick={checkServerHealth}
+            disabled={isRefreshing}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+              isRefreshing 
+                ? 'bg-amber-500 text-white cursor-not-allowed' 
+                : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
+            <span>{isRefreshing ? 'Connecting...' : 'Refresh Status'}</span>
+            {isRefreshing && (
+              <div className="flex space-x-1">
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            )}
+          </button>
         </div>
       </div>
 
@@ -285,7 +263,7 @@ export const Dashboard: React.FC = () => {
                 }`} />
                 Backend Server Status
               </h3>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 {serverStatus === 'connected' ? (
                   <span className="flex items-center">
                     <span className="mr-2">Connected and operational</span>
@@ -303,7 +281,7 @@ export const Dashboard: React.FC = () => {
                     </div>
                   </span>
                 )}
-              </div>
+              </p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
