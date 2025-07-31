@@ -30,6 +30,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<PaymentResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        PaymentResponse response = new PaymentResponse("PARAMETER_ERROR", "Parameter error: " + ex.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<PaymentResponse> handleGenericException(Exception ex) {
         PaymentResponse response = new PaymentResponse("INTERNAL_ERROR", "An unexpected error occurred: " + ex.getMessage());

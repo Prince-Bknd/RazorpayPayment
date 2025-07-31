@@ -41,14 +41,7 @@ export const useConnectionStatus = () => {
     await checkConnection();
   }, [checkConnection]);
 
-  // Check connection on mount and every 30 seconds
-  useEffect(() => {
-    checkConnection();
-    
-    const interval = setInterval(checkConnection, 30000);
-    
-    return () => clearInterval(interval);
-  }, [checkConnection]);
+  // No automatic health checks - only when explicitly requested
 
   return {
     ...status,

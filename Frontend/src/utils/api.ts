@@ -54,14 +54,33 @@ export const verifyPayment = async (paymentData: {
   razorpay_payment_id: string;
   razorpay_signature: string;
 }): Promise<boolean> => {
-  const response = await api.post('/payments/verify', null, {
-    params: {
-      paymentId: paymentData.razorpay_payment_id,
-      orderId: paymentData.razorpay_order_id,
-      signature: paymentData.razorpay_signature
-    }
+  // Backend expects query parameters and returns a simple boolean
+  console.log('Sending verification request to backend:', {
+    paymentId: paymentData.razorpay_payment_id,
+    orderId: paymentData.razorpay_order_id,
+    signature: paymentData.razorpay_signature
   });
-  return response.data;
+  
+  try {
+    const response = await api.post('/payments/verify', null, {
+      params: {
+        paymentId: paymentData.razorpay_payment_id,
+        orderId: paymentData.razorpay_order_id,
+        signature: paymentData.razorpay_signature
+      }
+    });
+    
+    console.log('Backend verification response (success):', response.data);
+    return response.data;
+  } catch (error: any) {
+    // Backend returns 400 when verification fails (signature mismatch)
+    if (error.response?.status === 400) {
+      console.log('Backend verification response (failed):', error.response.data);
+      return false;
+    }
+    // Re-throw other errors (500, network errors, etc.)
+    throw error;
+  }
 };
 
 export const getPaymentDetails = async (paymentId: string) => {

@@ -148,6 +148,7 @@ export const Dashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [dynamicStats.length]);
 
+  // Check server health only once when component mounts
   useEffect(() => {
     checkServerHealth();
   }, []);
@@ -214,6 +215,7 @@ export const Dashboard: React.FC = () => {
               Monitor your payment transactions and revenue metrics
             </p>
           </div>
+          {/* Resolved merge conflict and updated refresh button */}
           <button
             onClick={checkServerHealth}
             disabled={isRefreshing}

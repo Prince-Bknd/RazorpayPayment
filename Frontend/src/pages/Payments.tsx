@@ -26,6 +26,8 @@ export const Payments: React.FC = () => {
     };
   }, []);
 
+  // No automatic health check on component mount
+
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -42,6 +44,10 @@ export const Payments: React.FC = () => {
 
     setLoading(true);
     try {
+      console.log('Creating order for amount:', numAmount);
+      
+      // No automatic health check before payment
+      
       // Create order with custom amount
       const orderResponse = await createOrder({
         amount: numAmount,
@@ -53,8 +59,10 @@ export const Payments: React.FC = () => {
         description: `Payment of ₹${numAmount}`
       });
 
+      console.log('Order response:', orderResponse);
+
       if (!orderResponse.success) {
-        throw new Error(orderResponse.message);
+        throw new Error(orderResponse.message || 'Failed to create order');
       }
 
       const order = orderResponse.data;
@@ -70,6 +78,15 @@ export const Payments: React.FC = () => {
         order_id: order.orderId,
         handler: async (response: any) => {
           try {
+            console.log('Payment response:', response);
+            console.log('Payment data being sent for verification:', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            
+            // No test verification call - only do the actual verification
+            
             // Verify payment
             const verifyResponse = await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
@@ -77,6 +94,10 @@ export const Payments: React.FC = () => {
               razorpay_signature: response.razorpay_signature
             });
 
+            console.log('Verification response:', verifyResponse);
+            console.log('Verification response type:', typeof verifyResponse);
+
+            // Backend returns a simple boolean
             if (verifyResponse) {
               toast.success('Payment successful!');
               // Reset form
@@ -84,9 +105,30 @@ export const Payments: React.FC = () => {
             } else {
               toast.error('Payment verification failed');
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error('Payment verification error:', error);
-            toast.error('Payment verification failed');
+            console.error('Error details:', {
+              status: error.response?.status,
+              data: error.response?.data,
+              message: error.message,
+              url: error.config?.url
+            });
+            
+            let errorMessage = 'Payment verification failed. Please try again.';
+            
+            if (error.response?.status === 500) {
+              errorMessage = 'Backend server error. Please check if the backend is running.';
+            } else if (error.response?.status === 404) {
+              errorMessage = 'Payment verification endpoint not found.';
+            } else if (error.code === 'ERR_NETWORK') {
+              errorMessage = 'Cannot connect to backend server. Please check if the backend is running on port 5000.';
+            } else if (error.response?.data?.message) {
+              errorMessage = error.response.data.message;
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            
+            toast.error(errorMessage);
           }
         },
         prefill: {
@@ -99,6 +141,7 @@ export const Payments: React.FC = () => {
         },
         modal: {
           ondismiss: () => {
+            console.log('Payment modal dismissed');
             setLoading(false);
           }
         }
@@ -109,7 +152,8 @@ export const Payments: React.FC = () => {
       razorpay.open();
     } catch (error: any) {
       console.error('Payment error:', error);
-      toast.error(error.message || 'Payment failed');
+      const errorMessage = error.response?.data?.message || error.message || 'Payment failed. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
