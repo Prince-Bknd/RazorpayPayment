@@ -77,7 +77,16 @@ public class PaymentService {
 
     public Boolean verifyPayment(String paymentId, String orderId, String signature) {
     	try {
+			System.out.println("=== SIGNATURE VERIFICATION START ===");
+			System.out.println("Input parameters:");
+			System.out.println("  PaymentId: " + paymentId);
+			System.out.println("  OrderId: " + orderId);
+			System.out.println("  Signature: " + signature);
+			System.out.println("Secret key length: " + (secretKey != null ? secretKey.length() : "null"));
+			System.out.println("Secret key (first 10 chars): " + (secretKey != null ? secretKey.substring(0, Math.min(10, secretKey.length())) + "..." : "null"));
+			
 			String payload = orderId + "|" + paymentId;
+			System.out.println("Generated payload: " + payload);
 
 			Mac sha256Hmac = Mac.getInstance("HmacSHA256");
 			SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
@@ -94,9 +103,15 @@ public class PaymentService {
 			}
 
 			String expectedSignature = hexString.toString();
+			System.out.println("Expected signature: " + expectedSignature);
+			System.out.println("Received signature: " + signature);
+			System.out.println("Signatures match: " + expectedSignature.equals(signature));
+			System.out.println("=== SIGNATURE VERIFICATION END ===");
 
 			return expectedSignature.equals(signature);
 		} catch (Exception e) {
+			System.err.println("Exception during signature verification: " + e.getMessage());
+			e.printStackTrace();
 			logger.error("Exception during signature verification: ", e);
 			return false;
 		}
@@ -118,5 +133,13 @@ public class PaymentService {
         } catch (Exception e) {
             return new PaymentResponse(null, "Internal server error: " + e.getMessage());
         }
+    }
+    
+    public String getKeyId() {
+        return keyId;
+    }
+    
+    public String getSecretKey() {
+        return secretKey;
     }
 } 
