@@ -27,11 +27,25 @@ export const Header: React.FC = () => {
             <Bell className="w-5 h-5" />
           </button>
           
+          {/* Enhanced Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200"
+            className="relative p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
-            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            <div className="relative">
+              {theme === 'light' ? (
+                <Moon className="w-5 h-5 transition-transform duration-300 hover:rotate-12" />
+              ) : (
+                <Sun className="w-5 h-5 transition-transform duration-300 hover:rotate-12" />
+              )}
+            </div>
+            {/* Theme indicator dot */}
+            <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full transition-all duration-300 ${
+              theme === 'light' 
+                ? 'bg-blue-500 shadow-lg shadow-blue-500/50' 
+                : 'bg-amber-400 shadow-lg shadow-amber-400/50'
+            }`} />
           </button>
           
           <div className="flex items-center space-x-2">

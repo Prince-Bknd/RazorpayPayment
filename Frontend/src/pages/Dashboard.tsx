@@ -20,7 +20,6 @@ import {
   PieChart,
   LineChart
 } from 'lucide-react';
-import { healthCheck } from '../utils/api';
 import { useRouter } from '../hooks/useRouter';
 
 interface LiveTransaction {
@@ -34,13 +33,10 @@ interface LiveTransaction {
 
 export const Dashboard: React.FC = () => {
   const { navigate } = useRouter();
-  const [serverStatus, setServerStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
-  const [serverInfo, setServerInfo] = useState<any>(null);
   const [isLive, setIsLive] = useState(true);
   const [liveTransactions, setLiveTransactions] = useState<LiveTransaction[]>([]);
   const [currentMetric, setCurrentMetric] = useState(0);
   const [animatedValue, setAnimatedValue] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Dynamic stats with animations
   const dynamicStats = [
@@ -148,25 +144,6 @@ export const Dashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [dynamicStats.length]);
 
-  // Check server health only once when component mounts
-  useEffect(() => {
-    // Only check once when dashboard loads
-    checkServerHealth();
-  }, []);
-
-  const checkServerHealth = async () => {
-    setIsRefreshing(true);
-    try {
-      const data = await healthCheck();
-      setServerInfo(data);
-      setServerStatus('connected');
-    } catch (error) {
-      setServerStatus('disconnected');
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
@@ -215,116 +192,6 @@ export const Dashboard: React.FC = () => {
             <p className="text-slate-600 dark:text-slate-400">
               Monitor your payment transactions and revenue metrics
             </p>
-          </div>
-                     {serverStatus === 'disconnected' ? (
-             <button
-               onClick={checkServerHealth}
-               disabled={isRefreshing}
-               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                 isRefreshing 
-                   ? 'bg-amber-500 text-white cursor-not-allowed' 
-                   : 'bg-red-500 hover:bg-red-600 text-white hover:scale-105'
-               }`}
-             >
-               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
-               <span>{isRefreshing ? 'Connecting...' : 'Try Connect'}</span>
-               {isRefreshing && (
-                 <div className="flex space-x-1">
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                 </div>
-               )}
-             </button>
-           ) : (
-             <button
-               onClick={checkServerHealth}
-               disabled={isRefreshing}
-               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                 isRefreshing 
-                   ? 'bg-amber-500 text-white cursor-not-allowed' 
-                   : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
-               }`}
-             >
-               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
-               <span>{isRefreshing ? 'Connecting...' : 'Refresh Status'}</span>
-               {isRefreshing && (
-                 <div className="flex space-x-1">
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                 </div>
-               )}
-             </button>
-           )}
-        </div>
-      </div>
-
-      {/* Server Status with Animation */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className={`w-4 h-4 rounded-full ${
-                serverStatus === 'connected' ? 'bg-green-500 animate-pulse' : 
-                serverStatus === 'disconnected' ? 'bg-red-500 animate-pulse' : 
-                'bg-amber-500 animate-ping'
-              }`}></div>
-              {serverStatus === 'checking' && (
-                <div className="absolute inset-0 w-4 h-4 rounded-full bg-amber-400 animate-ping" style={{ animationDelay: '0.5s' }}></div>
-              )}
-              {serverStatus === 'connected' && (
-                <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-400 animate-ping" style={{ animationDelay: '0.3s' }}></div>
-              )}
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center">
-                <Zap className={`w-5 h-5 text-blue-500 mr-2 ${
-                  serverStatus === 'checking' ? 'animate-spin' : 
-                  serverStatus === 'connected' ? 'animate-pulse' : ''
-                }`} />
-                Backend Server Status
-              </h3>
-              <div className="text-sm text-slate-600 dark:text-slate-400">
-                {serverStatus === 'connected' ? (
-                  <span className="flex items-center">
-                    <span className="mr-2">Connected and operational</span>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                  </span>
-                ) : serverStatus === 'disconnected' ? (
-                  'Disconnected - Please check your backend server'
-                ) : (
-                  <span className="flex items-center">
-                    <span className="mr-2">Connecting to server...</span>
-                    <div className="flex space-x-1">
-                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-1 h-1 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    </div>
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            {serverStatus === 'checking' && (
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-amber-600 dark:text-amber-400 animate-pulse">Connecting...</span>
-              </div>
-            )}
-            {serverStatus === 'connected' && (
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-600 dark:text-green-400">Live</span>
-              </div>
-            )}
-            {serverStatus === 'disconnected' && (
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-red-600 dark:text-red-400">Offline</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
