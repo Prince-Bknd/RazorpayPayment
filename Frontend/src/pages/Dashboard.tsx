@@ -21,6 +21,7 @@ import {
   LineChart
 } from 'lucide-react';
 import { useRouter } from '../hooks/useRouter';
+import { healthCheck } from '../utils/api';
 
 interface LiveTransaction {
   id: string;
@@ -37,6 +38,9 @@ export const Dashboard: React.FC = () => {
   const [liveTransactions, setLiveTransactions] = useState<LiveTransaction[]>([]);
   const [currentMetric, setCurrentMetric] = useState(0);
   const [animatedValue, setAnimatedValue] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [serverInfo, setServerInfo] = useState<any>(null);
+  const [serverStatus, setServerStatus] = useState<'connected' | 'disconnected'>('disconnected');
 
   // Dynamic stats with animations
   const dynamicStats = [
