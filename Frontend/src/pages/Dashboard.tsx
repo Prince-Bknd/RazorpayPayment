@@ -144,6 +144,24 @@ export const Dashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [dynamicStats.length]);
 
+  // Check server health only once when component mounts
+  useEffect(() => {
+    checkServerHealth();
+  }, []);
+
+  const checkServerHealth = async () => {
+    setIsRefreshing(true);
+    try {
+      const data = await healthCheck();
+      setServerInfo(data);
+      setServerStatus('connected');
+    } catch (error) {
+      setServerStatus('disconnected');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
@@ -193,10 +211,29 @@ export const Dashboard: React.FC = () => {
               Monitor your payment transactions and revenue metrics
             </p>
           </div>
+          {/* Resolved merge conflict and updated refresh button */}
+          <button
+            onClick={checkServerHealth}
+            disabled={isRefreshing}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+              isRefreshing 
+                ? 'bg-amber-500 text-white cursor-not-allowed' 
+                : 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-300'}`} />
+            <span>{isRefreshing ? 'Connecting...' : 'Refresh Status'}</span>
+            {isRefreshing && (
+              <div className="flex space-x-1">
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1 h-1 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {dynamicStats.map((stat, index) => {
           const Icon = stat.icon;
@@ -233,7 +270,6 @@ export const Dashboard: React.FC = () => {
         })}
       </div>
 
-      {/* Live Transactions Feed */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
