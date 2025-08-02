@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Sun, User, Bell, CreditCard } from 'lucide-react';
+import { CreditCard, Moon, Sun, User } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { ConnectionStatus } from './ConnectionStatus';
 
@@ -23,10 +23,6 @@ export const Header: React.FC = () => {
           {/* Connection Status */}
           <ConnectionStatus />
           
-          <button className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-colors duration-200">
-            <Bell className="w-5 h-5" />
-          </button>
-          
           {/* Enhanced Theme Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -47,15 +43,6 @@ export const Header: React.FC = () => {
                 : 'bg-amber-400 shadow-lg shadow-amber-400/50'
             }`} />
           </button>
-          
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-              Payment Admin
-            </span>
-          </div>
         </div>
       </div>
     </header>

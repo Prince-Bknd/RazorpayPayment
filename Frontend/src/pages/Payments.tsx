@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, ArrowRight, Loader2 } from 'lucide-react';
 import { createOrder, verifyPayment } from '../utils/api';
-import { ConnectionWarning } from '../components/ConnectionWarning';
 import toast from 'react-hot-toast';
 
 declare global {
@@ -161,9 +160,6 @@ export const Payments: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Connection Warning */}
-      <ConnectionWarning />
-      
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2">
